@@ -42,7 +42,7 @@ class _SplashViewState extends State<SplashView> {
         child: const SafeArea(
           child: Center(
             child: Text(
-              'Foodies!',
+              'Foodies',
               style: TextStyle(
                 fontSize: 28,
                 fontWeight: FontWeight.bold,

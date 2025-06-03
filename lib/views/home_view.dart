@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:foodies/bloc/food/food_bloc.dart';
+import 'package:foodies/models/food_model.dart';
 import 'package:foodies/utils/app_colors.dart';
+import 'package:foodies/utils/app_core_widget.dart';
 
 class HomeView extends StatefulWidget {
   const HomeView({super.key});
@@ -9,6 +14,19 @@ class HomeView extends StatefulWidget {
 }
 
 class _HomeViewState extends State<HomeView> {
+  FoodBloc bloc = FoodBloc();
+  FoodModel? randomFood;
+
+  _loadInit() {
+    bloc.add(GetRandomFoodRequest());
+  }
+
+  @override
+  void initState() {
+    _loadInit();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -31,62 +49,92 @@ class _HomeViewState extends State<HomeView> {
                     ),
                   ),
                   const SizedBox(height: 16),
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: AppColors.color100,
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        const Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Sticky Toffee Pudding',
-                              style: TextStyle(
-                                fontSize: 12,
-                              ),
-                            ),
-                            Text(
-                              'Dessert',
-                              style: TextStyle(
-                                fontSize: 22,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            Text(
-                              '@British',
-                              style: TextStyle(
-                                fontSize: 10,
-                              ),
-                            ),
-                          ],
-                        ),
-                        Image.network(
-                          "https://www.themealdb.com/images/media/meals/sqrtwu1511721265.jpg",
-                          width: 80,
-                          height: 80,
-                          fit: BoxFit.cover,
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 800),
-                  const Text(
-                    'bottom!',
-                    style: TextStyle(
-                      fontSize: 28,
-                      fontWeight: FontWeight.bold,
-                    ),
+                  BlocConsumer(
+                    bloc: bloc,
+                    listener: listenerRandomFood,
+                    builder: builderRandomFood,
                   ),
                 ],
               ),
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  void listenerRandomFood(BuildContext context, Object? state) {
+    if (state is GetRandomFoodSuccess) {
+      randomFood = bloc.randomFood;
+    }
+
+    if (state is GetRandomFoodError) {
+      Fluttertoast.showToast(msg: state.errorMessage ?? "Terjadi kesalahan");
+    }
+  }
+
+  Widget builderRandomFood(BuildContext context, Object? state) {
+    if (state is GetRandomFoodLoading) {
+      return const Center(
+        child: ThreeBounceLoading(
+          size: 18,
+          color: AppColors.color600,
+        ),
+      );
+    }
+
+    return buildRandomFood(context);
+  }
+
+  Widget buildRandomFood(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 32),
+      decoration: BoxDecoration(
+        color: AppColors.color100,
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  randomFood?.strMeal ?? '-',
+                  style: const TextStyle(
+                    fontSize: 12,
+                  ),
+                  softWrap: true,
+                  overflow: TextOverflow.visible,
+                ),
+                Text(
+                  randomFood?.strCategory ?? '-',
+                  style: const TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                Text(
+                  "@${randomFood?.strArea}",
+                  style: const TextStyle(
+                    fontSize: 10,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(12),
+            child: Image.network(
+              randomFood?.strMealThumb ?? '-',
+              width: 80,
+              height: 80,
+              fit: BoxFit.cover,
+            ),
+          ),
+        ],
       ),
     );
   }
