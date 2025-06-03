@@ -11,6 +11,9 @@ dependencies:
   flutter:
     sdk: flutter
   cupertino_icons: ^1.0.8
+  dio: ^5.4.0
+  flutter_bloc: ^8.1.6
+  fluttertoast: ^8.0.8
   google_fonts: ^6.1.0
 
 dev_dependencies:
