@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:country_flags/country_flags.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:foodies/bloc/area/area_bloc.dart';
 import 'package:foodies/bloc/category/category_bloc.dart';
 import 'package:foodies/bloc/food/food_bloc.dart';
 import 'package:foodies/models/food_model.dart';
@@ -15,14 +17,31 @@ class HomeView extends StatefulWidget {
 }
 
 class _HomeViewState extends State<HomeView> {
-  FoodBloc bloc = FoodBloc();
+  FoodBloc foodBloc = FoodBloc();
   CategoryBloc categoryBloc = CategoryBloc();
+  AreaBloc areaBloc = AreaBloc();
   FoodModel? randomFood;
   List<FoodModel>? category;
+  List<FoodModel>? area;
+
+  final List<Color> colorVariants = [
+    AppColors.color600,
+    AppColors.color700,
+    AppColors.color800,
+    AppColors.color900,
+  ];
+
+  final List<Color> colorVariants2 = [
+    AppColors.color900,
+    AppColors.color800,
+    AppColors.color700,
+    AppColors.color600,
+  ];
 
   _loadInit() {
-    bloc.add(GetRandomFoodRequest());
+    foodBloc.add(GetRandomFoodRequest());
     categoryBloc.add(GetCategoryRequest());
+    areaBloc.add(GetAreaRequest());
   }
 
   @override
@@ -57,7 +76,7 @@ class _HomeViewState extends State<HomeView> {
                     height: 16,
                   ),
                   BlocConsumer(
-                    bloc: bloc,
+                    bloc: foodBloc,
                     listener: listenerRandomFood,
                     builder: builderRandomFood,
                   ),
@@ -91,6 +110,36 @@ class _HomeViewState extends State<HomeView> {
                     listener: listenerCategory,
                     builder: builderCategory,
                   ),
+                  const SizedBox(
+                    height: 16,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text(
+                        'Area',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      IconButton(
+                        onPressed: () {},
+                        icon: const Icon(
+                          Icons.arrow_forward_ios,
+                          size: 16,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(
+                    height: 4,
+                  ),
+                  BlocConsumer(
+                    bloc: areaBloc,
+                    listener: listenerArea,
+                    builder: builderArea,
+                  ),
                 ],
               ),
             ),
@@ -102,7 +151,7 @@ class _HomeViewState extends State<HomeView> {
 
   void listenerRandomFood(BuildContext context, Object? state) {
     if (state is GetRandomFoodSuccess) {
-      randomFood = bloc.randomFood;
+      randomFood = foodBloc.randomFood;
     }
 
     if (state is GetRandomFoodError) {
@@ -217,11 +266,13 @@ class _HomeViewState extends State<HomeView> {
         itemCount: category?.length,
         itemBuilder: (context, index) {
           final item = category?[index];
+          final randomColor = colorVariants[index % colorVariants.length];
+
           return Container(
             width: 120,
             margin: const EdgeInsets.only(right: 12),
             decoration: BoxDecoration(
-              color: AppColors.color600,
+              color: randomColor,
               borderRadius: BorderRadius.circular(12),
             ),
             child: Column(
@@ -235,7 +286,9 @@ class _HomeViewState extends State<HomeView> {
                   errorBuilder: (_, __, ___) =>
                       const Icon(Icons.fastfood, color: Colors.white),
                 ),
-                const SizedBox(height: 8),
+                const SizedBox(
+                  height: 8,
+                ),
                 Text(
                   item?.strCategory ?? '-',
                   style: const TextStyle(
@@ -252,4 +305,110 @@ class _HomeViewState extends State<HomeView> {
       ),
     );
   }
+
+  void listenerArea(BuildContext context, Object? state) {
+    if (state is GetAreaSuccess) {
+      area = areaBloc.area;
+    }
+
+    if (state is GetAreaError) {
+      Fluttertoast.showToast(msg: state.errorMessage ?? "Terjadi kesalahan");
+    }
+  }
+
+  Widget builderArea(BuildContext context, Object? state) {
+    if (state is GetAreaLoading) {
+      return const Center(
+        child: ThreeBounceLoading(
+          size: 18,
+          color: AppColors.color600,
+        ),
+      );
+    }
+
+    if (state is GetAreaError) {
+      return Container();
+    }
+
+    return buildArea(context);
+  }
+
+  Widget buildArea(BuildContext context) {
+    return SizedBox(
+      height: 120,
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        itemCount: category?.length,
+        itemBuilder: (context, index) {
+          final item = area?[index];
+          final randomColor = colorVariants2[index % colorVariants2.length];
+          String? countryCode = areaToCountryCode[item?.strArea];
+
+          return Container(
+            width: 120,
+            margin: const EdgeInsets.only(right: 12),
+            decoration: BoxDecoration(
+              color: randomColor,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                if (countryCode != null)
+                  CountryFlag.fromCountryCode(
+                    countryCode,
+                    width: 32,
+                    height: 20,
+                  ),
+                const SizedBox(
+                  height: 16,
+                ),
+                Text(
+                  item?.strArea ?? '-',
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Map<String, String> areaToCountryCode = {
+    'American': 'US',
+    'British': 'GB',
+    'Canadian': 'CA',
+    'Chinese': 'CN',
+    'Croatian': 'HR',
+    'Dutch': 'NL',
+    'Egyptian': 'EG',
+    'Filipino': 'PH',
+    'French': 'FR',
+    'Greek': 'GR',
+    'Indian': 'IN',
+    'Irish': 'IE',
+    'Italian': 'IT',
+    'Jamaican': 'JM',
+    'Japanese': 'JP',
+    'Kenyan': 'KE',
+    'Malaysian': 'MY',
+    'Mexican': 'MX',
+    'Moroccan': 'MA',
+    'Polish': 'PL',
+    'Portuguese': 'PT',
+    'Russian': 'RU',
+    'Spanish': 'ES',
+    'Thai': 'TH',
+    'Tunisian': 'TN',
+    'Turkish': 'TR',
+    'Ukrainian': 'UA',
+    'Uruguayan': 'UY',
+    'Vietnamese': 'VN',
+  };
 }
