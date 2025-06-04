@@ -73,8 +73,11 @@ class _ThreeBounceLoadingState extends State<ThreeBounceLoading>
 }
 
 class DelayTween extends Tween<double> {
-  DelayTween({double? begin, double? end, required this.delay})
-      : super(begin: begin, end: end);
+  DelayTween({
+    required this.delay,
+    super.begin,
+    super.end,
+  });
 
   final double delay;
 
