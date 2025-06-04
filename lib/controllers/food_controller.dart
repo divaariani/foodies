@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/widgets.dart';
 import 'package:foodies/models/food_model.dart';
 import 'package:foodies/utils/app_constant.dart';
 
@@ -23,16 +24,15 @@ class FoodController {
       );
 
       var data = FoodModel.fromJson(response.data["meals"][0]);
-
+      debugPrint("$data nya");
       return data;
     } on DioException catch (e) {
+      debugPrint("DioException: ${e.message}");
+      debugPrint("Status CODE: ${e.response?.statusCode}");
       if (e.type == DioExceptionType.badResponse) {
         int? statusCode = e.response!.statusCode;
-        if (statusCode == 500) {
-          throw "500";
-        }
-        if (statusCode == 401) {
-          throw "401";
+        if (statusCode == 404) {
+          throw "Data tidak ditemukan";
         }
         throw "error";
       }

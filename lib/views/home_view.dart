@@ -83,6 +83,10 @@ class _HomeViewState extends State<HomeView> {
       );
     }
 
+    if (state is GetRandomFoodError) {
+      return Container();
+    }
+
     return buildRandomFood(context);
   }
 
@@ -117,7 +121,7 @@ class _HomeViewState extends State<HomeView> {
                   ),
                 ),
                 Text(
-                  "@${randomFood?.strArea}",
+                  "@${randomFood?.strArea ?? '-'}",
                   style: const TextStyle(
                     fontSize: 10,
                   ),
@@ -125,15 +129,16 @@ class _HomeViewState extends State<HomeView> {
               ],
             ),
           ),
-          ClipRRect(
-            borderRadius: BorderRadius.circular(12),
-            child: Image.network(
-              randomFood?.strMealThumb ?? '-',
-              width: 80,
-              height: 80,
-              fit: BoxFit.cover,
+          if (randomFood?.strMealThumb != null)
+            ClipRRect(
+              borderRadius: BorderRadius.circular(12),
+              child: Image.network(
+                randomFood?.strMealThumb ?? '-',
+                width: 80,
+                height: 80,
+                fit: BoxFit.cover,
+              ),
             ),
-          ),
         ],
       ),
     );
