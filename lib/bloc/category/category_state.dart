@@ -17,3 +17,16 @@ class GetCategoryError extends CategoryState {
 
 class GetCategoryLoading extends CategoryState {}
 //End: Category Food
+
+//Start: List Food Per Category 
+class GetFoodCategorySuccess extends CategoryState {
+  GetFoodCategorySuccess();
+}
+
+class GetFoodCategoryError extends CategoryState {
+  final String? errorMessage;
+  GetFoodCategoryError({this.errorMessage});
+}
+
+class GetFoodCategoryLoading extends CategoryState {}
+//End: List Food Per Category 
