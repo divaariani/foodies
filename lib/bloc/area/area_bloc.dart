@@ -11,9 +11,13 @@ class AreaBloc extends Bloc<AreaEvent, AreaState> {
     on<GetAreaRequest>((event, emit) async {
       await _getArea(event, emit);
     });
+    on<GetFoodAreaRequest>((event, emit) async {
+      await _getFoodPerArea(event, emit);
+    });
   }
 
   List<FoodModel>? area;
+  List<FoodModel>? foodPerArea;
 
   Future<void> _getArea(
       GetAreaRequest event, Emitter<AreaState> emit) async {
@@ -25,6 +29,19 @@ class AreaBloc extends Bloc<AreaEvent, AreaState> {
       emit(GetAreaSuccess());
     } catch (ex) {
       emit(GetAreaError(errorMessage: ex.toString()));
+    }
+  }
+
+  Future<void> _getFoodPerArea(
+      GetFoodAreaRequest event, Emitter<AreaState> emit) async {
+    AreaController controller = AreaController();
+    emit(GetFoodAreaLoading());
+    try {
+      List<FoodModel> data = await controller.getFoodArea(event.name);
+      foodPerArea = data;
+      emit(GetFoodAreaSuccess());
+    } catch (ex) {
+      emit(GetFoodAreaError(errorMessage: ex.toString()));
     }
   }
 }

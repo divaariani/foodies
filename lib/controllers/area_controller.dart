@@ -43,4 +43,32 @@ class AreaController {
     }
   }
   //END: Area Food
+
+  //START: List Food Per Area
+  Future<List<FoodModel>> getFoodArea(String foodName) async {
+    try {
+      response = await dio.get(
+        "$baseUrl/filter.php?a=$foodName",
+      );
+
+      List<FoodModel> result = (response.data["meals"] as List)
+          .map((e) => FoodModel.fromJson(e))
+          .toList();
+
+      debugPrint("List Food Per Area $result");
+      return result;
+    } on DioException catch (e) {
+      debugPrint("DioException List Food Per Area: ${e.message}");
+      debugPrint("Status CODE List Food Per Area: ${e.response?.statusCode}");
+      if (e.type == DioExceptionType.badResponse) {
+        int? statusCode = e.response!.statusCode;
+        if (statusCode == 404) {
+          throw "Data tidak ditemukan";
+        }
+        throw "error";
+      }
+      throw "error";
+    }
+  }
+  //END: List Food Per Area
 }

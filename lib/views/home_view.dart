@@ -347,41 +347,49 @@ class _HomeViewState extends State<HomeView> {
       height: 120,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
-        itemCount: category?.length,
+        itemCount: area?.length,
         itemBuilder: (context, index) {
           final item = area?[index];
           final randomColor = colorVariants2[index % colorVariants2.length];
           String? countryCode = areaToCountryCode[item?.strArea];
 
-          return Container(
-            width: 120,
-            margin: const EdgeInsets.only(right: 12),
-            decoration: BoxDecoration(
-              color: randomColor,
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                if (countryCode != null)
-                  CountryFlag.fromCountryCode(
-                    countryCode,
-                    width: 32,
-                    height: 20,
+          return GestureDetector(
+            onTap: () {
+              GoRouter.of(context).push(
+                '/area',
+                extra: item,
+              );
+            },
+            child: Container(
+              width: 120,
+              margin: const EdgeInsets.only(right: 12),
+              decoration: BoxDecoration(
+                color: randomColor,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  if (countryCode != null)
+                    CountryFlag.fromCountryCode(
+                      countryCode,
+                      width: 32,
+                      height: 20,
+                    ),
+                  const SizedBox(
+                    height: 16,
                   ),
-                const SizedBox(
-                  height: 16,
-                ),
-                Text(
-                  item?.strArea ?? '-',
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
+                  Text(
+                    item?.strArea ?? '-',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    textAlign: TextAlign.center,
                   ),
-                  textAlign: TextAlign.center,
-                ),
-              ],
+                ],
+              ),
             ),
           );
         },

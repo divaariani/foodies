@@ -17,3 +17,16 @@ class GetAreaError extends AreaState {
 
 class GetAreaLoading extends AreaState {}
 //End: Area Food
+
+//Start: List Food Per Area 
+class GetFoodAreaSuccess extends AreaState {
+  GetFoodAreaSuccess();
+}
+
+class GetFoodAreaError extends AreaState {
+  final String? errorMessage;
+  GetFoodAreaError({this.errorMessage});
+}
+
+class GetFoodAreaLoading extends AreaState {}
+//End: List Food Per Area 
