@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:foodies/bloc/category/category_bloc.dart';
 import 'package:foodies/bloc/food/food_bloc.dart';
 import 'package:foodies/models/food_model.dart';
 import 'package:foodies/utils/app_colors.dart';
@@ -15,10 +16,13 @@ class HomeView extends StatefulWidget {
 
 class _HomeViewState extends State<HomeView> {
   FoodBloc bloc = FoodBloc();
+  CategoryBloc categoryBloc = CategoryBloc();
   FoodModel? randomFood;
+  List<FoodModel>? category;
 
   _loadInit() {
     bloc.add(GetRandomFoodRequest());
+    categoryBloc.add(GetCategoryRequest());
   }
 
   @override
@@ -37,7 +41,8 @@ class _HomeViewState extends State<HomeView> {
         child: SafeArea(
           child: SingleChildScrollView(
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+              padding: const EdgeInsets.only(
+                  top: 16, bottom: 16, left: 32, right: 16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -48,11 +53,43 @@ class _HomeViewState extends State<HomeView> {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(
+                    height: 16,
+                  ),
                   BlocConsumer(
                     bloc: bloc,
                     listener: listenerRandomFood,
                     builder: builderRandomFood,
+                  ),
+                  const SizedBox(
+                    height: 16,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text(
+                        'Categories',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      IconButton(
+                        onPressed: () {},
+                        icon: const Icon(
+                          Icons.arrow_forward_ios,
+                          size: 16,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(
+                    height: 4,
+                  ),
+                  BlocConsumer(
+                    bloc: categoryBloc,
+                    listener: listenerCategory,
+                    builder: builderCategory,
                   ),
                 ],
               ),
@@ -93,6 +130,7 @@ class _HomeViewState extends State<HomeView> {
   Widget buildRandomFood(BuildContext context) {
     return Container(
       width: double.infinity,
+      margin: const EdgeInsets.only(right: 16),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 32),
       decoration: BoxDecoration(
         color: AppColors.color100,
@@ -140,6 +178,77 @@ class _HomeViewState extends State<HomeView> {
               ),
             ),
         ],
+      ),
+    );
+  }
+
+  void listenerCategory(BuildContext context, Object? state) {
+    if (state is GetCategorySuccess) {
+      category = categoryBloc.category;
+    }
+
+    if (state is GetCategoryError) {
+      Fluttertoast.showToast(msg: state.errorMessage ?? "Terjadi kesalahan");
+    }
+  }
+
+  Widget builderCategory(BuildContext context, Object? state) {
+    if (state is GetCategoryLoading) {
+      return const Center(
+        child: ThreeBounceLoading(
+          size: 18,
+          color: AppColors.color600,
+        ),
+      );
+    }
+
+    if (state is GetCategoryError) {
+      return Container();
+    }
+
+    return buildCategory(context);
+  }
+
+  Widget buildCategory(BuildContext context) {
+    return SizedBox(
+      height: 120,
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        itemCount: category?.length,
+        itemBuilder: (context, index) {
+          final item = category?[index];
+          return Container(
+            width: 120,
+            margin: const EdgeInsets.only(right: 12),
+            decoration: BoxDecoration(
+              color: AppColors.color600,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Image.asset(
+                  "assets/${item?.strCategory}.png",
+                  width: 40,
+                  height: 40,
+                  color: Colors.white,
+                  errorBuilder: (_, __, ___) =>
+                      const Icon(Icons.fastfood, color: Colors.white),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  item?.strCategory ?? '-',
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ],
+            ),
+          );
+        },
       ),
     );
   }
