@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:foodies/bloc/food/food_bloc.dart';
+import 'package:foodies/models/food_model.dart';
 import 'package:foodies/utils/app_colors.dart';
+import 'package:foodies/views/category_view.dart';
+import 'package:foodies/views/home_view.dart';
 import 'package:foodies/views/splash_view.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 void main() {
@@ -18,7 +22,7 @@ class MyApp extends StatelessWidget {
       providers: [
         BlocProvider(create: (context) => FoodBloc()),
       ],
-      child: MaterialApp(
+      child: MaterialApp.router(
         title: 'Foodies',
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
@@ -27,8 +31,28 @@ class MyApp extends StatelessWidget {
           textTheme: GoogleFonts.montserratTextTheme(),
           useMaterial3: true,
         ),
-        home: const SplashView(),
+        routerConfig: _router,
       ),
     );
   }
 }
+
+final GoRouter _router = GoRouter(
+  routes: [
+    GoRoute(
+      path: '/',
+      builder: (context, state) => const SplashView(),
+    ),
+    GoRoute(
+      path: '/home',
+      builder: (context, state) => const HomeView(),
+    ),
+    GoRoute(
+      path: '/category',
+      builder: (context, state) {
+        final food = state.extra as FoodModel;
+        return CategoryView(food: food);
+      },
+    ),
+  ],
+);

@@ -8,6 +8,7 @@ import 'package:foodies/bloc/food/food_bloc.dart';
 import 'package:foodies/models/food_model.dart';
 import 'package:foodies/utils/app_colors.dart';
 import 'package:foodies/utils/app_core_widget.dart';
+import 'package:go_router/go_router.dart';
 
 class HomeView extends StatefulWidget {
   const HomeView({super.key});
@@ -268,37 +269,45 @@ class _HomeViewState extends State<HomeView> {
           final item = category?[index];
           final randomColor = colorVariants[index % colorVariants.length];
 
-          return Container(
-            width: 120,
-            margin: const EdgeInsets.only(right: 12),
-            decoration: BoxDecoration(
-              color: randomColor,
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Image.asset(
-                  "assets/${item?.strCategory}.png",
-                  width: 40,
-                  height: 40,
-                  color: Colors.white,
-                  errorBuilder: (_, __, ___) =>
-                      const Icon(Icons.fastfood, color: Colors.white),
-                ),
-                const SizedBox(
-                  height: 8,
-                ),
-                Text(
-                  item?.strCategory ?? '-',
-                  style: const TextStyle(
+          return GestureDetector(
+            onTap: () {
+              GoRouter.of(context).push(
+                '/category',
+                extra: item,
+              );
+            },
+            child: Container(
+              width: 120,
+              margin: const EdgeInsets.only(right: 12),
+              decoration: BoxDecoration(
+                color: randomColor,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Image.asset(
+                    "assets/${item?.strCategory}.png",
+                    width: 40,
+                    height: 40,
                     color: Colors.white,
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
+                    errorBuilder: (_, __, ___) =>
+                        const Icon(Icons.fastfood, color: Colors.white),
                   ),
-                  textAlign: TextAlign.center,
-                ),
-              ],
+                  const SizedBox(
+                    height: 8,
+                  ),
+                  Text(
+                    item?.strCategory ?? '-',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+              ),
             ),
           );
         },
