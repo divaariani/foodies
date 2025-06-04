@@ -11,9 +11,13 @@ class FoodBloc extends Bloc<FoodEvent, FoodState> {
     on<GetRandomFoodRequest>((event, emit) async {
       await _getRandomFood(event, emit);
     });
+    on<GetDetailFoodRequest>((event, emit) async {
+      await _getDetailFood(event, emit);
+    });
   }
 
   FoodModel? randomFood;
+  FoodModel? detailFood;
 
   Future<void> _getRandomFood(
       GetRandomFoodRequest event, Emitter<FoodState> emit) async {
@@ -25,6 +29,19 @@ class FoodBloc extends Bloc<FoodEvent, FoodState> {
       emit(GetRandomFoodSuccess());
     } catch (ex) {
       emit(GetRandomFoodError(errorMessage: ex.toString()));
+    }
+  }
+
+  Future<void> _getDetailFood(
+      GetDetailFoodRequest event, Emitter<FoodState> emit) async {
+    FoodController controller = FoodController();
+    emit(GetDetailFoodLoading());
+    try {
+      FoodModel data = await controller.getDetailFood(event.foodId);
+      detailFood = data;
+      emit(GetDetailFoodSuccess());
+    } catch (ex) {
+      emit(GetDetailFoodError(errorMessage: ex.toString()));
     }
   }
 }

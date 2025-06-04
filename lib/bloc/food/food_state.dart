@@ -17,3 +17,16 @@ class GetRandomFoodError extends FoodState {
 
 class GetRandomFoodLoading extends FoodState {}
 //End: Random Food
+
+//Start: Detail Food
+class GetDetailFoodSuccess extends FoodState {
+  GetDetailFoodSuccess();
+}
+
+class GetDetailFoodError extends FoodState {
+  final String? errorMessage;
+  GetDetailFoodError({this.errorMessage});
+}
+
+class  GetDetailFoodLoading extends FoodState {}
+//End: Detail Food

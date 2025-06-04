@@ -123,7 +123,10 @@ class _CategoryViewState extends State<CategoryView> {
 
         return GestureDetector(
           onTap: () {
-            // Navigate
+            GoRouter.of(context).push(
+              '/detail',
+              extra: item,
+            );
           },
           child: Container(
             decoration: BoxDecoration(

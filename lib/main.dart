@@ -4,6 +4,7 @@ import 'package:foodies/bloc/food/food_bloc.dart';
 import 'package:foodies/models/food_model.dart';
 import 'package:foodies/utils/app_colors.dart';
 import 'package:foodies/views/category_view.dart';
+import 'package:foodies/views/detail_view.dart';
 import 'package:foodies/views/home_view.dart';
 import 'package:foodies/views/splash_view.dart';
 import 'package:go_router/go_router.dart';
@@ -52,6 +53,13 @@ final GoRouter _router = GoRouter(
       builder: (context, state) {
         final food = state.extra as FoodModel;
         return CategoryView(food: food);
+      },
+    ),
+    GoRoute(
+      path: '/detail',
+      builder: (context, state) {
+        final food = state.extra as FoodModel;
+        return DetailView(food: food);
       },
     ),
   ],
