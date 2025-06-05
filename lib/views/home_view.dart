@@ -95,7 +95,9 @@ class _HomeViewState extends State<HomeView> {
                         ),
                       ),
                       IconButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          GoRouter.of(context).push('/category-list');
+                        },
                         icon: const Icon(
                           Icons.arrow_forward_ios,
                           size: 16,
@@ -125,7 +127,9 @@ class _HomeViewState extends State<HomeView> {
                         ),
                       ),
                       IconButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          GoRouter.of(context).push('/area-list');
+                        },
                         icon: const Icon(
                           Icons.arrow_forward_ios,
                           size: 16,
